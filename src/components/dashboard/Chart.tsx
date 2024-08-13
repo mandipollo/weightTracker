@@ -9,8 +9,15 @@ import {
 	Tooltip,
 	Legend,
 } from "chart.js";
-import { lineChartData } from "./Data";
+
 import InputWeight from "./InputWeight";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useAppSelector } from "../../store/store";
+import { db } from "../../firebaseConfig";
+import { WeightDataProps } from "../utilities/interfaces";
+import convertTimestampToDate from "../utilities/convertTimestampToDate";
+
 ChartJS.register(
 	CategoryScale,
 	LinearScale,
@@ -21,6 +28,52 @@ ChartJS.register(
 	Legend
 );
 const LineGraph = () => {
+	const [err, setErr] = useState<string>("");
+	const uid = useAppSelector(state => state.userSlice.uid);
+	// retreive weight data from firestore
+	const [weightData, setWeightData] = useState<WeightDataProps[]>([]);
+
+	useEffect(() => {
+		if (!uid) return;
+		let tempData: WeightDataProps[] = [];
+
+		try {
+			const unsubscribe = async () => {
+				const response = await getDocs(
+					collection(db, `users/${uid}/weightTracker`)
+				);
+
+				response.forEach(doc => {
+					tempData.push(doc.data() as WeightDataProps);
+				});
+				setWeightData(tempData);
+			};
+
+			unsubscribe();
+		} catch (err) {
+			if (err instanceof Error) {
+				setErr(err.message);
+			}
+		}
+	}, [uid]);
+
+	//  the timestamp needs to be converted to date and populated in the labels array
+	const convertedData = convertTimestampToDate(weightData);
+	// populate data from firestore
+
+	const data = {
+		labels: convertedData.map(data => data.date),
+		datasets: [
+			{
+				label: "Weight",
+				data: convertedData.map(data => data.weight),
+				borderColor: "#30363E",
+				backgroundColor: "green",
+			},
+		],
+	};
+
+	// chart options
 	const options = {
 		responsive: true,
 		plugins: {
@@ -32,7 +85,7 @@ const LineGraph = () => {
 			title: {
 				display: true,
 				text: "Weigth trajectory",
-				color: "white", // Color for the title
+				color: "gray", // Color for the title
 			},
 		},
 		scales: {
@@ -58,9 +111,9 @@ const LineGraph = () => {
 	};
 
 	return (
-		<section className="flex flex-col w-1/2 h-full p-2">
+		<section className="flex rounded-md border border-darkBorder bg-darkPrimary flex-col  w-full  p-2">
 			<InputWeight />
-			<Line options={options} data={lineChartData} />
+			<Line options={options} data={data} />
 		</section>
 	);
 };

@@ -30,7 +30,7 @@ const Root = () => {
 	}, [dispatch]);
 
 	return (
-		<div className="flex  relative h-screen flex-col w-full ">
+		<div className="flex text-darkText  relative h-screen flex-col w-full ">
 			<header className="flex  sticky top-0">
 				<Navbar />
 			</header>
