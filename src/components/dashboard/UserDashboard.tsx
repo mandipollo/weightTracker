@@ -1,7 +1,9 @@
+import LineGraph from "./Chart";
+
 const UserDashboard = () => {
 	return (
-		<div>
-			<h1>UserDashboard</h1>
+		<div className="flex gap-2  h-full w-full">
+			<LineGraph />
 		</div>
 	);
 };

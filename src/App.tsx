@@ -39,7 +39,7 @@ const Route = createBrowserRouter([
 
 const App = () => {
 	return (
-		<div className="flex flex-1">
+		<div className="flex flex-1 ">
 			<Provider store={store}>
 				<PersistGate loading={null} persistor={persistor}>
 					<RouterProvider router={Route}></RouterProvider>
