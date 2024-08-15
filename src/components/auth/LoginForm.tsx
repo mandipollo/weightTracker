@@ -52,7 +52,7 @@ const LoginForm = () => {
 		<section className="flex w-1/2 h-full">
 			<form
 				onSubmit={submitHandler}
-				className="w-full h-full p-2 gap-2 flex justify-center items-center flex-col"
+				className="w-full h-full text-black p-2 gap-2 flex justify-center items-center flex-col"
 			>
 				<input
 					required
@@ -69,7 +69,7 @@ const LoginForm = () => {
 					onChange={passwordHandler}
 					value={password}
 					placeholder="password"
-					type="text"
+					type="password"
 					id="password"
 					className={`${
 						touchedPassword && !errPassword

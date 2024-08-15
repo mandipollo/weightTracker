@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import CalendarPage from "./pages/CalendarPage";
 let persistor = persistStore(store);
 
 const Route = createBrowserRouter([
@@ -32,6 +33,10 @@ const Route = createBrowserRouter([
 			{
 				path: "dashboard",
 				element: <DashboardPage />,
+			},
+			{
+				path: "calendar",
+				element: <CalendarPage />,
 			},
 		],
 	},

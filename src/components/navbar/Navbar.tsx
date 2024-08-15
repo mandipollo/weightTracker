@@ -3,8 +3,13 @@ import logo from "../../assets/logo.svg";
 import { useAppSelector } from "../../store/store";
 import capitaliseFirstLetter from "../utilities/capitaliseFirstLetter";
 import { auth } from "../../firebaseConfig";
+import { useLocation } from "react-router-dom";
 
 const Navbar = () => {
+	const url = useLocation().pathname;
+
+	const route = url === "/dashboard" ? "/calendar" : "/dashboard";
+
 	const navigate = useNavigate();
 	const user = useAppSelector(state => state.userSlice);
 
@@ -17,13 +22,15 @@ const Navbar = () => {
 
 	return (
 		<section className="flex w-full border border-darkBorder bg-darkPrimary h-16 justify-between items-center p-2 ">
-			{user.uid ? (
-				<NavLink to="/dashboard">
-					<img src={logo} alt="logo" className="h-10 w-10 text-white" />
-				</NavLink>
-			) : (
+			{!user.uid && (
 				<NavLink to="/">
 					<img src={logo} alt="logo" className="h-10 w-10 text-white" />
+				</NavLink>
+			)}
+
+			{user.uid && (
+				<NavLink to={route}>
+					<button className=" py-2 px-4 ">{route.slice(1)}</button>
 				</NavLink>
 			)}
 
@@ -33,7 +40,7 @@ const Navbar = () => {
 						<button className=" py-2 px-4 text-white">Open</button>
 					</NavLink>
 				) : (
-					<button className="text-white py-2 px-4 rounded-2xl">
+					<button className=" py-2 px-4 rounded-2xl">
 						{capitaliseFirstLetter(user.name)}
 					</button>
 				)}

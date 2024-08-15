@@ -29,6 +29,8 @@ ChartJS.register(
 );
 const LineGraph = () => {
 	const [err, setErr] = useState<string>("");
+	console.log(err);
+
 	const uid = useAppSelector(state => state.userSlice.uid);
 	// retreive weight data from firestore
 	const [weightData, setWeightData] = useState<WeightDataProps[]>([]);
@@ -111,9 +113,11 @@ const LineGraph = () => {
 	};
 
 	return (
-		<section className="flex rounded-md border border-darkBorder bg-darkPrimary flex-col  w-full  p-2">
+		<section className="flex border border-darkBorder bg-darkPrimary flex-col w-full h-full ">
 			<InputWeight />
-			<Line options={options} data={data} />
+			<div className="flex-1 flex justify-center items-center relative w-full h-3/4">
+				<Line options={options} data={data} />
+			</div>
 		</section>
 	);
 };

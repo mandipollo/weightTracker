@@ -13,19 +13,19 @@ const Root = () => {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		const unsubscribe = () => {
-			onAuthStateChanged(auth, user => {
-				if (user) {
-					const name = user.displayName;
-					const email = user.email;
-					const uid = user.uid;
-					dispatch(setUser({ name, email, uid }));
-				} else {
-					dispatch(resetUser());
-				}
-			});
-		};
+		// Subscribe to auth state changes
+		const unsubscribe = onAuthStateChanged(auth, user => {
+			if (user) {
+				const name = user.displayName;
+				const email = user.email;
+				const uid = user.uid;
+				dispatch(setUser({ name, email, uid }));
+			} else {
+				dispatch(resetUser());
+			}
+		});
 
+		// Cleanup subscription on unmount
 		return () => unsubscribe();
 	}, [dispatch]);
 
@@ -34,10 +34,7 @@ const Root = () => {
 			<header className="flex  sticky top-0">
 				<Navbar />
 			</header>
-			<main
-				className="flex flex-1 bg-darkSecondary"
-				style={{ maxHeight: " calc( 100vh - 3.5rem )" }}
-			>
+			<main className="flex flex-1 bg-darkSecondary max-h-[calc(100vh-3.5rem)]">
 				<Outlet />
 			</main>
 		</div>

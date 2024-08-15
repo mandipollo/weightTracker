@@ -1,10 +1,9 @@
-import UserDashboard from "../components/dashboard/UserDashboard";
-import videoPlayBack from "../assets/1943483-uhd_3840_2160_25fps (1).mp4";
+import LineGraph from "../components/dashboard/Chart";
 
 const DashboardPage = () => {
 	return (
-		<main className="flex w-full h-full flex-1">
-			<UserDashboard />
+		<main className="flex  flex-row  h-full w-full">
+			<LineGraph />
 		</main>
 	);
 };
