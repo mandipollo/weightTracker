@@ -1,77 +1,63 @@
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../../store/store";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { EventDataProps } from "../utilities/interfaces";
 
 const localizer = momentLocalizer(moment);
 
 const EventCalendar = () => {
-	const events = [
-		{
-			id: 0,
-			title: "All Day Event very long title",
-			allDay: true,
-			start: new Date(2015, 3, 0),
-			end: new Date(2015, 3, 1),
-		},
-		{
-			id: 1,
-			title: "Long Event",
-			start: new Date(2015, 3, 7),
-			end: new Date(2015, 3, 10),
-		},
+	const [err, setErr] = useState<string>("");
 
-		{
-			id: 2,
-			title: "DTS STARTS",
-			start: new Date(2016, 2, 13, 0, 0, 0),
-			end: new Date(2016, 2, 20, 0, 0, 0),
-		},
+	const uid = useAppSelector(state => state.userSlice.uid);
+	// retreive weight data from firestore
+	const [eventData, setEventData] = useState<EventDataProps[]>([]);
 
-		{
-			id: 3,
-			title: "DTS ENDS",
-			start: new Date(2016, 10, 6, 0, 0, 0),
-			end: new Date(2016, 10, 13, 0, 0, 0),
-		},
+	useEffect(() => {
+		if (!uid) return;
+		let tempData: EventDataProps[] = [];
 
-		{
-			id: 4,
-			title: "Some Event",
-			start: new Date(2015, 3, 9, 0, 0, 0),
-			end: new Date(2015, 3, 9, 0, 0, 0),
-		},
-		{
-			id: 5,
-			title: "Conference",
-			start: new Date(2015, 3, 11),
-			end: new Date(2015, 3, 13),
-			desc: "Big conference for important people",
-		},
-		{
-			id: 6,
-			title: "Meeting",
-			start: new Date(2015, 3, 12, 10, 30, 0, 0),
-			end: new Date(2015, 3, 12, 12, 30, 0, 0),
-			desc: "Pre-meeting meeting, to prepare for the meeting",
-		},
+		try {
+			const unsubscribe = async () => {
+				const response = await getDocs(collection(db, `users/${uid}/events`));
 
-		{
-			id: 7,
-			title: "Today",
-			start: new Date(new Date().setHours(new Date().getHours() - 3)),
-			end: new Date(new Date().setHours(new Date().getHours() + 3)),
-		},
-	];
+				response.forEach(doc => {
+					tempData.push(doc.data() as EventDataProps);
+				});
+				setEventData(tempData);
+			};
+
+			unsubscribe();
+		} catch (err) {
+			if (err instanceof Error) {
+				setErr(err.message);
+			}
+		}
+	}, [uid]);
+
+	const events = eventData.map(event => {
+		const date = event.date.toDate();
+		return {
+			title: event.event,
+			start: date,
+			end: date,
+		};
+	});
 
 	return (
 		<div className="flex flex-1">
-			<Calendar
-				events={events}
-				localizer={localizer}
-				startAccessor="start"
-				endAccessor="end"
-				style={{ height: "100%", width: "100%" }}
-			/>
+			{err && <p>{err}</p>}
+			{events && (
+				<Calendar
+					events={events}
+					localizer={localizer}
+					startAccessor="start"
+					style={{ height: "100%", width: "100%" }}
+				/>
+			)}
 		</div>
 	);
 };

@@ -1,19 +1,19 @@
 import { addDoc, collection } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useState, FC } from "react";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useAppSelector } from "../../store/store";
 import { db } from "../../firebaseConfig";
 import closeImg from "../../assets/close.svg";
-const InputWeight = () => {
+const InputEvents: FC = () => {
 	const uid = useAppSelector(state => state.userSlice.uid);
 	// local states
 
 	const [err, setError] = useState<string>("");
 
 	const [date, setDate] = useState<Date | null>(null);
-	const [weight, setWeight] = useState<number | string>("");
+	const [event, setEvent] = useState<string>("");
 	const [showForm, setShowForm] = useState<boolean>(false);
 
 	// handlers
@@ -24,8 +24,8 @@ const InputWeight = () => {
 	const handleShowForm = () => {
 		setShowForm(!showForm);
 	};
-	const weightHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setWeight(e.target.valueAsNumber);
+	const eventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setEvent(e.target.value);
 	};
 
 	// submit the date and weight to firebase database
@@ -33,8 +33,8 @@ const InputWeight = () => {
 		e.preventDefault();
 		if (!uid) return;
 		try {
-			await addDoc(collection(db, `users/${uid}/weightTracker`), {
-				weight,
+			await addDoc(collection(db, `users/${uid}/events`), {
+				event,
 				date,
 			});
 
@@ -52,8 +52,9 @@ const InputWeight = () => {
 				onClick={handleShowForm}
 				className="p-2 rounded-md border border-darkBorder bg-black"
 			>
-				Input Weight
+				Input Event
 			</button>
+
 			{err && <p>{err}</p>}
 			<form
 				onSubmit={handleSubmit}
@@ -79,12 +80,12 @@ const InputWeight = () => {
 					onChange={date => setDate(date)}
 				/>
 				<input
-					onChange={weightHandler}
-					value={weight}
-					placeholder="Weight"
+					onChange={eventHandler}
+					value={event}
+					placeholder="Event"
 					className=" outline-none p-2 border text-center border-darkBorder text-white bg-darkSecondary"
-					type="number"
-					id="weight"
+					type="text"
+					id="event"
 				/>
 
 				<button
@@ -99,4 +100,4 @@ const InputWeight = () => {
 	);
 };
 
-export default InputWeight;
+export default InputEvents;
